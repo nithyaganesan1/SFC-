@@ -1,0 +1,22 @@
+version: "3.8"
+services:
+  src:
+    tty: true
+    stdin_open: true
+    container_name: src
+    hostname: src
+    build: ./src
+
+  node_1:
+    tty: true
+    stdin_open: true
+    container_name: node_1
+    hostname: node_1
+    build: ./vnfs
+
+  dst:
+    tty: true
+    stdin_open: true
+    container_name: dst
+    hostname: dst
+    build: ./dst
