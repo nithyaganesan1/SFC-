@@ -12,7 +12,6 @@ MY_IP = socket.gethostbyname(MY_CONTAINER_NAME)
 SRC_PORT = 7000
 CONTROLLER_IP = socket.gethostbyname("sdn")
 FILTER = 'tcp and dst port 7000 and dst {0}'.format(MY_IP)
-print(FILTER)
 
 routingTable = {}
 
@@ -80,7 +79,7 @@ def getRoutingTable():
     data = client.recv(4096)
     routingTable = json.loads(data.decode('utf-8'))
 
-    print(routingTable)
+    # print(routingTable)
 
 
 if __name__ =="__main__":

@@ -10,7 +10,7 @@ MY_CONTAINER_NAME = str(subprocess.check_output(['bash','-c', 'hostname']).decod
 MY_IP = socket.gethostbyname(MY_CONTAINER_NAME)
 SRC_PORT = 9000
 CONTROLLER_IP = socket.gethostbyname("sdn")
-FILTER = 'tcp and dst port 9000'
+FILTER = 'tcp and dst port 9000 and dst {0}'.format(MY_IP)
 routingTable = {}
 
 flagsMapping = {
@@ -62,7 +62,7 @@ def getRoutingTable():
     data = client.recv(4096)
     routingTable = json.loads(data.decode('utf-8'))
 
-    print(routingTable)
+    # print(routingTable)
 
 
 if __name__ =="__main__":

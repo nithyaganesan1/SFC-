@@ -6,7 +6,7 @@ MY_IP = socket.gethostbyname(MY_CONTAINER_NAME)
 SRC_IP, SRC_PORT = MY_CONTAINER_NAME, 10000
 DST_PORT = 5000
 
-FILTER = 'tcp and dst port 10000 and (src port 6000 or src port 7000 or src port 8000 or src port 9000)'
+FILTER = 'tcp and dst port 10000 and (src port 6000 or src port 7000 or src port 8000 or src port 9000) and dst {0}'.format(MY_IP)
 
 ack_data = "This is ack from the {0}".format(MY_CONTAINER_NAME)
 

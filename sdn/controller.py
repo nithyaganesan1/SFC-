@@ -2,7 +2,7 @@ import socket
 import json 
 
 routingTable = {
-    "1" : [["src"],["node_1",7000],["node_2",7000],["dst",10000]]
+    "1" : [["src"],["node_1",6000],["node_2",7000],["node_3",9000],["dst",10000]]
 }
 
 

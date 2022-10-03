@@ -77,7 +77,7 @@ def getRoutingTable():
     data = client.recv(4096)
     routingTable = json.loads(data.decode('utf-8'))
 
-    print(routingTable)
+    # print(routingTable)
 
 if __name__ =="__main__":
     getRoutingTable()

@@ -10,7 +10,8 @@ RUN pip install python-socketio
 COPY firewall_PF.py .
 COPY plain_PF.py .
 COPY dpi.py .
+COPY run.py .
 
-ENTRYPOINT ["python3", "plain_PF.py"]
-ENTRYPOINT ["python3", "firewall_PF.py"]
-ENTRYPOINT ["python3", "dpi.py"]
+ENTRYPOINT ["python3", "run.py"]
+# ENTRYPOINT ["python3", "firewall_PF.py"]
+# ENTRYPOINT ["python3", "dpi.py"]
