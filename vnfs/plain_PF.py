@@ -8,9 +8,9 @@ import json
 
 MY_CONTAINER_NAME = str(subprocess.check_output(['bash','-c', 'hostname']).decode("utf-8")).replace("\n","")
 MY_IP = socket.gethostbyname(MY_CONTAINER_NAME)
-SRC_PORT = 6000
+SRC_PORT = 9000
 CONTROLLER_IP = socket.gethostbyname("sdn")
-FILTER = 'tcp and dst port 6000'
+FILTER = 'tcp and dst port 9000'
 routingTable = {}
 
 flagsMapping = {
@@ -43,7 +43,7 @@ def getNextAddress(sfcNo):
 def handle_packet(packet):
     global SRC_PORT, flagsMapping
     
-    print("packet recieved")
+    print("packet recieved - plain_PF")
     print(bytes(packet[TCP].payload))
     flag = str(packet[TCP].flags)
 

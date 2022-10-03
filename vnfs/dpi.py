@@ -1,19 +1,19 @@
-from mimetypes import MimeTypes
-from sys import flags
+from curses import flash
+from pydoc import describe
+from urllib.request import parse_keqv_list
+from webbrowser import get
 from scapy.all import *
-import time
-import threading
-import socket
-import time
+import sys
+import socket 
 import json
-
-flag = 'F'
 
 MY_CONTAINER_NAME = str(subprocess.check_output(['bash','-c', 'hostname']).decode("utf-8")).replace("\n","")
 MY_IP = socket.gethostbyname(MY_CONTAINER_NAME)
-SRC_IP, SRC_PORT = MY_CONTAINER_NAME, 5000
+SRC_PORT = 7000
 CONTROLLER_IP = socket.gethostbyname("sdn")
-rrt_time = 0
+FILTER = 'tcp and dst port 7000 and dst {0}'.format(MY_IP)
+print(FILTER)
+
 routingTable = {}
 
 flagsMapping = {
@@ -26,6 +26,8 @@ flagsMapping = {
     'E': '7',
     'C': '8',
 }
+notAllowed = ["hack", "virus", "urgent", "attention"]
+
 
 
 def getNextAddress(sfcNo):
@@ -41,33 +43,34 @@ def getNextAddress(sfcNo):
 
     print(DEST_IP, DEST_PORT)
     return DEST_IP, DEST_PORT
+
+
+def signatureMatching(data):
+    global notAllowed
+    for s in notAllowed:
+        if s in data:
+            return False
+
+    return True
+
+
+def handle_packet(packet):
+    global SRC_PORT, flagsMapping, MY_IP
     
+    print("packet recieved - dpi")
+    print(bytes(packet[TCP].payload))
 
-def recieve_ack():
-    global rrt_time
-    def handle_packet(packet):
-        print("ack recieved")
-        print(bytes(packet[TCP].payload).decode('utf-8'))
-        print("---- RTT = {0} seconds ---- ".format(time.time() - rrt_time))
+    # print(packet[IP].dst)
 
-    sniff(prn=handle_packet, filter = "tcp and src port 10000 and dst port 5000")    
-   
+    if(signatureMatching(str(bytes(packet[TCP].payload)))):
+        flag = str(packet[TCP].flags)
 
-def send_request():
-    time.sleep(3)
-    global rrt_time, SRC_IP, SRC_PORT, flagsMapping, flag
-
-    while True:
-        rrt_time = time.time()
         DEST_IP, DEST_PORT = getNextAddress(flagsMapping[flag])
-        data = "This is the data from the {0}".format(MY_CONTAINER_NAME)
-
         pkt = IP(ttl = 64)
-        pkt.src = SRC_IP
+        pkt = pkt/TCP(sport=SRC_PORT, dport=DEST_PORT, flags = flag)/Raw(load=bytes(packet[TCP].payload))
+        pkt.src = packet[IP].src  # original ip of client
         pkt.dst = DEST_IP
-        pkt = pkt/TCP(sport=SRC_PORT, dport=DEST_PORT, flags=flag)/Raw(load=data)
         send(pkt)
-        time.sleep(20)
 
 
 def getRoutingTable():
@@ -79,16 +82,7 @@ def getRoutingTable():
 
     print(routingTable)
 
+
 if __name__ =="__main__":
     getRoutingTable()
-
-    t1 = threading.Thread(target=send_request)
-    t2 = threading.Thread(target=recieve_ack)
-
-    t1.start()
-    t2.start()
- 
-    t1.join()
-    t2.join()
- 
-    print("Done!")
+    sniff(prn=handle_packet, filter = FILTER)

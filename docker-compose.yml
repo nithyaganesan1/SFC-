@@ -1,5 +1,12 @@
 version: "3.8"
 services:
+  sdn:
+    tty: true
+    stdin_open: true
+    container_name: sdn
+    hostname: sdn
+    build: ./sdn
+
   src:
     tty: true
     stdin_open: true
@@ -12,6 +19,13 @@ services:
     stdin_open: true
     container_name: node_1
     hostname: node_1
+    build: ./vnfs
+
+  node_2:
+    tty: true
+    stdin_open: true
+    container_name: node_2
+    hostname: node_2
     build: ./vnfs
 
   dst:
