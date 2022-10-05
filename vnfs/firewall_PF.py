@@ -43,7 +43,7 @@ def getNextAddress(sfcNo):
 def handle_packet(packet):
     global SRC_PORT, flagsMapping
     
-    print("packet recieved")
+    print("packet recieved - FW")
     print(bytes(packet[TCP].payload))
     flag = str(packet[TCP].flags)
 
