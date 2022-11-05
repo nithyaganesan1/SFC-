@@ -13,8 +13,15 @@ MY_CONTAINER_NAME = str(subprocess.check_output(['bash','-c', 'hostname']).decod
 MY_IP = socket.gethostbyname(MY_CONTAINER_NAME)
 SRC_IP, SRC_PORT = MY_CONTAINER_NAME, 5000
 CONTROLLER_IP = socket.gethostbyname("sdn")
-rrt_time = 0
+data = "This is the data from the client_1"
+rrt_time = []
+rtt_index = 0
 routingTable = {}
+total_pkt_send = 1
+total_ack_receive = 0
+
+total_rtt = 0.0
+total_thorughput = 0.0
 
 flagsMapping = {
     'F': '1',
@@ -44,30 +51,44 @@ def getNextAddress(sfcNo):
     
 
 def recieve_ack():
-    global rrt_time
+    global rrt_time, data, total_ack_receive, rtt_index, total_rtt, total_thorughput, SRC_PORT
+
     def handle_packet(packet):
+        global total_ack_receive, rrt_time, rtt_index, total_rtt, total_thorughput
         print("ack recieved")
         print(bytes(packet[TCP].payload).decode('utf-8'))
-        print("---- RTT = {0} seconds ---- ".format(time.time() - rrt_time))
+        rtt = time.time() - rrt_time[rtt_index]
+        rtt_index += 1
+        total_rtt += rtt
+        total_thorughput += ((len(data)/rtt)*8)
+        print("---- RTT = {0} seconds ---- ".format(rtt))
+        print("---- Throughput = {0} B/s ---- ".format((len(data)/rtt)*8))
+        total_ack_receive += 1
 
     sniff(prn=handle_packet, filter = "tcp and src port 10000 and dst port 5000")    
    
 
 def send_request():
     time.sleep(3)
-    global rrt_time, SRC_IP, SRC_PORT, flagsMapping, flag
+    global rrt_time, SRC_IP, SRC_PORT, flagsMapping, flag, data, total_pkt_send, total_rtt, total_thorughput
 
-    while True:
-        rrt_time = time.time()
+    for i in range(total_pkt_send):
+        rrt_time.append(time.time())
         DEST_IP, DEST_PORT = getNextAddress(flagsMapping[flag])
-        data = "This is the data from the {0}".format(MY_CONTAINER_NAME)
-
+    
         pkt = IP(ttl = 64)
         pkt.src = SRC_IP
         pkt.dst = DEST_IP
         pkt = pkt/TCP(sport=SRC_PORT, dport=DEST_PORT, flags=flag)/Raw(load=data)
         send(pkt)
-        time.sleep(20)
+        # print(len(pkt))
+        time.sleep(1)
+    
+    time.sleep(20)
+
+    print("---- Packetloss = {0}% ---- ".format((total_pkt_send-total_ack_receive)*100/total_pkt_send))
+    # print("########################################################################################################## Avg RTT = {0} seconds ####### ".format(total_rtt/total_ack_receive))
+    # print("########################################################################################################## Avg Throghput = {0} B/s ####### ".format(total_thorughput/total_ack_receive))
 
 
 def getRoutingTable():
@@ -79,7 +100,7 @@ def getRoutingTable():
 
     # print(routingTable)
 
-if __name__ =="__main__":
+if __name__ == "__main__" :
     getRoutingTable()
 
     t1 = threading.Thread(target=send_request)

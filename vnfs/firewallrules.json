@@ -1,8 +1,8 @@
 {
-    "ListOfBannedIpAddr": ["", ""],
-    "ListOfBannedPorts": [80, 81],
-    "ListOfBannedPrefixes": ["172."],
-    "TimeThreshold": 10,
-    "PacketThreshold": 100,
-    "BlockPingAttacks" : "True"
-  }
+  "ListOfBannedIpAddr": ["", ""],
+  "ListOfBannedPorts": [80, 81],
+  "ListOfBannedPrefixes": ["182."],
+  "TimeThreshold": 10,
+  "PacketThreshold": 100,
+  "BlockPingAttacks": "True"
+}

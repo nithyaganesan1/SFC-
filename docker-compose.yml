@@ -6,6 +6,7 @@ services:
     container_name: sdn
     hostname: sdn
     build: ./sdn
+    image: sdn
 
   src:
     tty: true
@@ -13,6 +14,9 @@ services:
     container_name: src
     hostname: src
     build: ./src
+    image: src
+    depends_on:
+      - sdn
 
   node_1:
     tty: true
@@ -20,20 +24,117 @@ services:
     container_name: node_1
     hostname: node_1
     build: ./vnfs
+    image: node
+    depends_on:
+      - sdn
 
   node_2:
     tty: true
     stdin_open: true
     container_name: node_2
     hostname: node_2
-    build: ./vnfs
+    image: node
+    depends_on:
+      - sdn
 
   node_3:
     tty: true
     stdin_open: true
     container_name: node_3
     hostname: node_3
-    build: ./vnfs
+    image: node
+    depends_on:
+      - sdn
+    
+  node_4:
+    tty: true
+    stdin_open: true
+    container_name: node_4
+    hostname: node_4
+    image: node
+    depends_on:
+      - sdn
+
+  node_5:
+    tty: true
+    stdin_open: true
+    container_name: node_5
+    hostname: node_5
+    image: node
+    depends_on:
+      - sdn
+  
+  node_6:
+    tty: true
+    stdin_open: true
+    container_name: node_6
+    hostname: node_6
+    image: node
+    depends_on:
+      - sdn
+
+  node_6:
+    tty: true
+    stdin_open: true
+    container_name: node_6
+    hostname: node_6
+    image: node
+    depends_on:
+      - sdn
+
+  node_7:
+    tty: true
+    stdin_open: true
+    container_name: node_7
+    hostname: node_7
+    image: node
+    depends_on:
+      - sdn
+
+  node_8:
+    tty: true
+    stdin_open: true
+    container_name: node_8
+    hostname: node_8
+    image: node
+    depends_on:
+      - sdn
+
+  node_9:
+    tty: true
+    stdin_open: true
+    container_name: node_9
+    hostname: node_9
+    image: node
+    depends_on:
+      - sdn
+
+  node_10:
+    tty: true
+    stdin_open: true
+    container_name: node_10
+    hostname: node_10
+    image: node
+    depends_on:
+      - sdn
+
+  node_11:
+    tty: true
+    stdin_open: true
+    container_name: node_11
+    hostname: node_11
+    image: node
+    depends_on:
+      - sdn
+
+  node_12:
+    tty: true
+    stdin_open: true
+    container_name: node_12
+    hostname: node_12
+    image: node
+    depends_on:
+      - sdn
 
   dst:
     tty: true
@@ -41,3 +142,6 @@ services:
     container_name: dst
     hostname: dst
     build: ./dst
+    image: dst
+    depends_on:
+      - sdn

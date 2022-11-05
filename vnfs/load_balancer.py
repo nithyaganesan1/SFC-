@@ -5,12 +5,13 @@ from scapy.all import *
 import sys
 import socket 
 import json
+import time
 
 MY_CONTAINER_NAME = str(subprocess.check_output(['bash','-c', 'hostname']).decode("utf-8")).replace("\n","")
 MY_IP = socket.gethostbyname(MY_CONTAINER_NAME)
-SRC_PORT = 9000
+SRC_PORT = 8000
 CONTROLLER_IP = socket.gethostbyname("sdn")
-FILTER = 'tcp and dst port 9000 and dst {0}'.format(MY_IP)
+FILTER = 'tcp and dst port 8000 and dst {0}'.format(MY_IP)
 routingTable = {}
 
 flagsMapping = {
@@ -42,8 +43,9 @@ def getNextAddress(sfcNo):
 
 def handle_packet(packet):
     global SRC_PORT, flagsMapping
+
+    t = time.time()
     
-    print("packet recieved - plain_PF")
     print(bytes(packet[TCP].payload))
     flag = str(packet[TCP].flags)
 
@@ -52,6 +54,8 @@ def handle_packet(packet):
     pkt = pkt/TCP(sport=SRC_PORT, dport=DEST_PORT, flags = flag)/Raw(load=bytes(packet[TCP].payload))
     pkt.src = packet[IP].src  # original ip of client
     pkt.dst = DEST_IP
+    # print("packet recieved - LB : {0} secs".format(time.time() - t))
+    print("packet recieved - LB")
     send(pkt)
 
 

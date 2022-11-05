@@ -1,3 +1,4 @@
+from operator import ge
 import random
 
 class Ant :
@@ -233,32 +234,70 @@ class AntColonyOptimization :
     def getBestTrailWeight(self) :
         return self.bestTrailWeight
 
-if __name__ == "__main__":
-    file = open("graph.txt", "r")
-    content = str(file.read()).split('\n')
 
-    start = int(content[0])
-    end = int(content[1])
-    edges = int(content[2])
-    
-    graph = {}
-
-    for i in range(start, end+1):
-        graph[i] = []
-
-    for i in range(3, 3+edges):
-        line = content[i].split(' ')
-        src, dst, wgt = int(line[0]), int(line[1]), float(line[2])
-        graph[src].append([dst, wgt])
-        
-
-    minTrailLength = 2
-    
-    print('====debug====')
+def getSFCPath(graph, degree, start, end, minTrailLength):
     antColony = AntColonyOptimization(graph, start, end, minTrailLength)
-    print('====debug====')
 
     trails = antColony.getBestTrail()
-    print(antColony.getBestTrailWeight())
+    # print(antColony.getBestTrailWeight())
+
+    best_totol_degree = 1e18
+    ans = trails[0]
+
     for trail in trails :
-        print(trail)
+        total_degree = sum([degree[x] for x in trail])
+        # print(trail)
+
+        if total_degree < best_totol_degree:
+            ans = trail
+            best_totol_degree = total_degree
+    
+    print("  Path = {0}   and    Weight = {1} ms".format(ans, antColony.getBestTrailWeight()))
+    return ans
+
+# if __name__ == "__main__":
+#     file = open("graph.txt", "r")
+#     content = str(file.read()).split('\n')
+
+#     start = int(content[0])
+#     end = int(content[1])
+#     edges = int(content[2])
+    
+#     graph = {}
+
+#     for i in range(start, end+1):
+#         graph[i] = []
+
+#     for i in range(3, 3+edges):
+#         line = content[i].split(' ')
+#         src, dst, wgt = int(line[0]), int(line[1]), float(line[2])
+#         graph[src].append([dst, wgt])
+#         graph[dst].append([src, wgt])
+
+    
+#     degree = [0]*len(graph)
+#     for i in range(len(graph)):
+#         degree[i] = len(graph[i])
+
+#     minTrailLength = 5
+
+#     print('====debug====')
+#     antColony = AntColonyOptimization(graph, start, end, minTrailLength)
+#     print('====debug====')
+
+
+#     trails = antColony.getBestTrail()
+#     print(antColony.getBestTrailWeight())
+
+#     best_totol_degree = 1e18
+#     ans = trails[0]
+
+#     for trail in trails :
+#         total_degree = sum([degree[x] for x in trail])
+#         print(trail)
+
+#         if total_degree < best_totol_degree:
+#             ans = trail
+#             best_totol_degree = total_degree
+    
+#     print(ans)

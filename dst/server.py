@@ -11,19 +11,31 @@ FILTER = 'tcp and dst port 10000 and (src port 6000 or src port 7000 or src port
 ack_data = "This is ack from the {0}".format(MY_CONTAINER_NAME)
 
 
-def send_ack(dst):
+def send_ack(dst, dst_port):
     global MY_CONTAINER_NAME, ack_data, SRC_IP, SRC_PORT, DST_PORT
 
     pkt = IP(ttl = 64)
     pkt.src = SRC_IP
-    pkt = pkt/TCP(sport=SRC_PORT, dport=DST_PORT)/Raw(load=ack_data)
+    pkt = pkt/TCP(sport=SRC_PORT, dport=dst_port)/Raw(load=ack_data)
     pkt.dst = dst
     send(pkt)
 
 def handle(packet):
-    print("packet recived")
-    print(bytes(packet[TCP].payload).decode('utf-8'))
+    global MY_IP
+    d = bytes(packet[TCP].payload).decode('utf-8')
     
-    send_ack(packet[IP].src)
-        
+    print("packet recived")
+    print(d)
+
+    if("client_1" in d):
+        send_ack(packet[IP].src, 5000)
+    elif("client_2" in d):
+        send_ack(packet[IP].src, 5001)
+    elif("client_3" in d):
+        send_ack(packet[IP].src, 5002)
+    elif("client_4" in d):
+        send_ack(packet[IP].src, 5003)
+    elif("client_5" in d):
+        send_ack(packet[IP].src, 5004)
+
 sniff(prn = handle, filter = FILTER)

@@ -5,6 +5,8 @@ from scapy.all import *
 import sys
 import socket 
 import json
+import firewall
+import time
 
 MY_CONTAINER_NAME = str(subprocess.check_output(['bash','-c', 'hostname']).decode("utf-8")).replace("\n","")
 MY_IP = socket.gethostbyname(MY_CONTAINER_NAME)
@@ -42,8 +44,13 @@ def getNextAddress(sfcNo):
 
 def handle_packet(packet):
     global SRC_PORT, flagsMapping
+    t = time.time()
+
+    if firewall.firewall(packet) == 0:
+        print("packet recieved - FW : {0} secs".format(time.time()-t))
+        return # drop the packet
     
-    print("packet recieved - FW")
+    
     print(bytes(packet[TCP].payload))
     flag = str(packet[TCP].flags)
 
@@ -52,6 +59,9 @@ def handle_packet(packet):
     pkt = pkt/TCP(sport=SRC_PORT, dport=DEST_PORT, flags = flag)/Raw(load=bytes(packet[TCP].payload))
     pkt.src = packet[IP].src  # original ip of client
     pkt.dst = DEST_IP
+    
+    # print("packet recieved - FW : {0} secs".format(time.time()-t))
+    print("packet recieved - FW")
     send(pkt)
 
 

@@ -6,6 +6,7 @@ from scapy.all import *
 import sys
 import socket 
 import json
+import time
 
 MY_CONTAINER_NAME = str(subprocess.check_output(['bash','-c', 'hostname']).decode("utf-8")).replace("\n","")
 MY_IP = socket.gethostbyname(MY_CONTAINER_NAME)
@@ -55,8 +56,7 @@ def signatureMatching(data):
 
 def handle_packet(packet):
     global SRC_PORT, flagsMapping, MY_IP
-    
-    print("packet recieved - dpi")
+    t = time.time()
     print(bytes(packet[TCP].payload))
 
     # print(packet[IP].dst)
@@ -69,6 +69,8 @@ def handle_packet(packet):
         pkt = pkt/TCP(sport=SRC_PORT, dport=DEST_PORT, flags = flag)/Raw(load=bytes(packet[TCP].payload))
         pkt.src = packet[IP].src  # original ip of client
         pkt.dst = DEST_IP
+        # print("packet recieved - dpi : {0} secs".format(time.time() - t))
+        print("packet recieved - DPI")
         send(pkt)
 
 
